@@ -28,6 +28,7 @@ type UXCog struct {
 	id              string
 	hasBeenRendered bool
 	parseTree       *reconcile.ParseTree
+	cleanupFunc     func()
 }
 
 func (u *UXCog) getCogPrefixName() string {
@@ -46,6 +47,10 @@ func (u *UXCog) ID() string {
 
 func (u *UXCog) SetID(id string) {
 	u.id = id
+}
+
+func (u *UXCog) SetCleanupFunc(cleanupFunc func()) {
+	u.cleanupFunc = cleanupFunc
 }
 
 func (u *UXCog) SetElement(element *dom.Element) {
@@ -154,8 +159,15 @@ func (u *UXCog) RenderCogTemplate() {
 
 func (u *UXCog) Render() error {
 	document := dom.GetWindow().Document()
-
 	e := document.GetElementByID(u.ID())
+
+	if u.hasBeenRendered == true && e == nil {
+		if u.cleanupFunc != nil {
+			u.cleanupFunc()
+			return nil
+		}
+	}
+
 	if strings.ToLower(e.GetAttribute("data-component")) != "cog" {
 		return errors.New("The cog container div must have a \"data-component\" attribute with a value specified as \"cog\".")
 	}
