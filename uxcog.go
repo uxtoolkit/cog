@@ -62,6 +62,7 @@ func (u *UXCog) Element() *dom.Element {
 }
 
 func (u *UXCog) CogInit(ts *isokit.TemplateSet) {
+
 	u.hasBeenRendered = false
 	u.Props = make(map[string]interface{})
 	if ts != nil {
@@ -71,6 +72,11 @@ func (u *UXCog) CogInit(ts *isokit.TemplateSet) {
 	u.cogPrefixName = u.getCogPrefixName()
 
 	if isokit.OperatingEnvironment() == isokit.ServerEnvironment {
+
+		if isokit.UseStaticTemplateBundleFile == true {
+			return
+		}
+
 		u.RegisterCogTemplates()
 	}
 }
