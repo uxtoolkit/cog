@@ -72,11 +72,6 @@ func (u *UXCog) CogInit(ts *isokit.TemplateSet) {
 	u.cogPrefixName = u.getCogPrefixName()
 
 	if isokit.OperatingEnvironment() == isokit.ServerEnvironment {
-
-		if isokit.UseStaticTemplateBundleFile == true && isokit.StaticTemplateBundleFileExists() == true {
-			return
-		}
-
 		u.RegisterCogTemplates()
 	}
 }
