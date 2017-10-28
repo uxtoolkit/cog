@@ -17,6 +17,7 @@ var VDOMEnabled = true
 
 type Cog interface {
 	Render() error
+	Start() error
 }
 
 func init() {
