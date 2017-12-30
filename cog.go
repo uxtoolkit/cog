@@ -6,6 +6,7 @@
 package cog
 
 import (
+	"go/build"
 	"os"
 )
 
@@ -22,7 +23,14 @@ type Cog interface {
 
 func init() {
 
+	var gopath string
+	gp := os.Getenv("GOPATH")
+	if gp != "" {
+		gopath = gp
+	} else {
+		gopath = build.Default.GOPATH
+	}
 	DefaultTemplatesDirectoryName = "templates"
-	DefaultGoSourcePath = os.Getenv("GOPATH") + "/src"
+	DefaultGoSourcePath = gopath + "/src"
 
 }
