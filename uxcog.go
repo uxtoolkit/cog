@@ -7,6 +7,8 @@ package cog
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -34,7 +36,7 @@ type UXCog struct {
 func (u *UXCog) getCogPrefixName() string {
 
 	if u.cogType != nil {
-		result := strings.Split(u.cogType.PkgPath(), `/`)
+		result := strings.Split(u.cogType.PkgPath(), string(os.PathSeparator))
 		return "cog:" + result[len(result)-1]
 	} else {
 		return ""
@@ -68,7 +70,7 @@ func (u *UXCog) CogInit(ts *isokit.TemplateSet) {
 	if ts != nil {
 		u.templateSet = ts
 	}
-	u.cogTemplatePath = DefaultGoSourcePath + "/" + u.cogType.PkgPath() + "/" + DefaultTemplatesDirectoryName
+	u.cogTemplatePath = filepath.Join(DefaultGoSourcePath, u.cogType.PkgPath(), DefaultTemplatesDirectoryName)
 	u.cogPrefixName = u.getCogPrefixName()
 
 	if isokit.OperatingEnvironment() == isokit.ServerEnvironment {
@@ -140,8 +142,7 @@ func (u *UXCog) RenderCogTemplate() {
 
 	rp := isokit.RenderParams{Data: u.Props, Disposition: isokit.PlacementReplaceInnerContents, Element: *u.element, ShouldPopulateRenderedContent: populateRenderedContent}
 
-	u.templateSet.Render(u.getCogPrefixName()+"/"+strings.Split(u.getCogPrefixName(), ":")[1], &rp)
-
+	u.templateSet.Render(filepath.Join(u.getCogPrefixName(), strings.Split(u.getCogPrefixName(), ":")[1]), &rp)
 	if u.hasBeenRendered == false {
 		u.hasBeenRendered = true
 
@@ -184,8 +185,8 @@ func (u *UXCog) Render() error {
 		if VDOMEnabled == true {
 
 			rp := isokit.RenderParams{Data: u.Props, Disposition: isokit.PlacementReplaceInnerContents, Element: *u.element, ShouldPopulateRenderedContent: true, ShouldSkipFinalRenderStep: true}
-			u.templateSet.Render(u.getCogPrefixName()+"/"+strings.Split(u.getCogPrefixName(), ":")[1], &rp)
 
+			u.templateSet.Render(filepath.Join(u.getCogPrefixName(), strings.Split(u.getCogPrefixName(), ":")[1]), &rp)
 			D := dom.GetWindow().Document()
 			cogRoot := D.GetElementByID(u.id).FirstChild().(*dom.HTMLDivElement)
 			//contents := cogRoot.InnerHTML()
